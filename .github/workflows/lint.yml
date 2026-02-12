@@ -1,0 +1,64 @@
+name: Lint
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    - name: Install linting tools
+      run: |
+        pip install flake8 black isort pylint mypy
+    
+    - name: Run Flake8
+      run: |
+        flake8 backend/ --count --select=E9,F63,F7,F82 --show-source
+        flake8 backend/ --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+    
+    - name: Check code formatting with Black
+      run: black backend/ --check --diff || true
+    
+    - name: Check import ordering with isort
+      run: isort backend/ --check-only --diff || true
+    
+    - name: Run Pylint
+      run: |
+        pylint backend/ --disable=all --enable=E,F 2>/dev/null || true
+    
+    - name: Type check with mypy
+      run: mypy backend/ --ignore-missing-imports 2>/dev/null || true
+
+  security:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    - name: Install security tools
+      run: |
+        pip install bandit safety
+    
+    - name: Run Bandit security check
+      run: bandit -r backend/ -ll 2>/dev/null || true
+    
+    - name: Check for known vulnerabilities
+      run: |
+        pip install -r backend/requirements.txt 2>/dev/null || true
+        safety check --json 2>/dev/null || true

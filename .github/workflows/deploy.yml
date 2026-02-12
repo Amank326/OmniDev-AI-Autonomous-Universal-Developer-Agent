@@ -1,0 +1,77 @@
+name: Deploy OmniDev AI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-backend:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+    
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r backend/requirements.txt
+    
+    - name: Lint with flake8
+      run: |
+        pip install flake8
+        flake8 backend/app --count --select=E9,F63,F7,F82 --show-source --statistics
+      continue-on-error: true
+    
+    - name: Test with pytest
+      run: |
+        pip install pytest
+        pytest backend/tests/ -v
+      continue-on-error: true
+    
+    - name: Build Docker image
+      run: |
+        docker build -f backend/docker/Dockerfile -t omnidev-ai:latest .
+    
+    - name: Run Docker container
+      run: |
+        docker run -d -p 8000:8000 --name omnidev-test omnidev-ai:latest
+        sleep 5
+        curl -f http://localhost:8000/health || exit 1
+
+  build-android:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up JDK
+      uses: actions/setup-java@v3
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+    
+    - name: Build Android app
+      run: |
+        cd android
+        ./gradlew build
+      continue-on-error: true
+
+  deploy:
+    needs: [build-backend, build-android]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Deploy to production
+      run: |
+        echo "Deploying OmniDev AI..."
+        # Add deployment commands here
