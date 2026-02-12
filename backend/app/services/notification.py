@@ -1,5 +1,6 @@
 """Notification service for multi-channel notifications."""
 
+import json
 import logging
 from typing import Dict, Any
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -29,7 +30,7 @@ class NotificationService:
             title=title,
             message=message,
             channel=channel,
-            data=str(data) if data else None,
+            data=json.dumps(data) if data else None,
         )
         db.add(notification)
         await db.commit()
