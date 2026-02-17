@@ -9,7 +9,8 @@ from app.core.config import settings
 logger = logging.getLogger(__name__)
 
 # Initialize Stripe
-stripe.api_key = settings.STRIPE_SECRET_KEY
+if settings.STRIPE_SECRET_KEY:
+    stripe.api_key = settings.STRIPE_SECRET_KEY
 
 
 class StripeService:
@@ -23,7 +24,7 @@ class StripeService:
                 name=name,
             )
             return customer.id
-        except stripe.error.StripeError as e:
+        except stripe.StripeError as e:
             logger.error(f"Failed to create Stripe customer: {e}")
             return None
 
@@ -44,7 +45,7 @@ class StripeService:
                 "current_period_start": subscription.current_period_start,
                 "current_period_end": subscription.current_period_end,
             }
-        except stripe.error.StripeError as e:
+        except stripe.StripeError as e:
             logger.error(f"Failed to create subscription: {e}")
             return None
 
@@ -56,7 +57,7 @@ class StripeService:
                 cancel_at_period_end=True,
             )
             return True
-        except stripe.error.StripeError as e:
+        except stripe.StripeError as e:
             logger.error(f"Failed to cancel subscription: {e}")
             return False
 
@@ -78,7 +79,7 @@ class StripeService:
                 "client_secret": intent.client_secret,
                 "status": intent.status,
             }
-        except stripe.error.StripeError as e:
+        except stripe.StripeError as e:
             logger.error(f"Failed to create payment intent: {e}")
             return None
 

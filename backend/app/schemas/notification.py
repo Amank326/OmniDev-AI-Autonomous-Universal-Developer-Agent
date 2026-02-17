@@ -18,7 +18,6 @@ class NotificationBase(BaseModel):
 class NotificationCreate(NotificationBase):
     """Notification creation schema."""
 
-    user_id: int
     data: Optional[str] = None
 
 

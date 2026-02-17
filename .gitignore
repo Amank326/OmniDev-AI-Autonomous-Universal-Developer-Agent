@@ -136,6 +136,7 @@ celerybeat.pid
 
 # Environments
 .env
+.env.*
 .envrc
 .venv
 env/
@@ -205,3 +206,26 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+# Claude Code temp dirs
+tmpclaude-*/
+
+# Node.js
+node_modules/
+.next/
+out/
+package-lock.json
+
+# Frontend build
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+
+# Backend artifacts
+backend/omnidev.db
+backend/logs/
+*.db
+
+# Temp files
+e2e_test*.log
+fix_enum.py

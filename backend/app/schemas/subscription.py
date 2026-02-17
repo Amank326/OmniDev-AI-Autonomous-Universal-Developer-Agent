@@ -16,7 +16,6 @@ class SubscriptionBase(BaseModel):
 class SubscriptionCreate(SubscriptionBase):
     """Subscription creation schema."""
 
-    user_id: int
     stripe_subscription_id: Optional[str] = None
     stripe_customer_id: Optional[str] = None
 

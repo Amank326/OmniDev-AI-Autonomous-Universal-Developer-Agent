@@ -153,16 +153,16 @@ Authorization: Bearer <token>
 Content-Type: application/json
 
 {
-  "user_id": 1,
   "title": "Welcome",
   "message": "Welcome to OmniDev AI",
-  "channel": "email"
+  "channel": "email",
+  "data": null
 }
 ```
 
-#### Get User Notifications
+#### Get My Notifications
 ```http
-GET /notifications/user/{user_id}?skip=0&limit=100
+GET /notifications/?skip=0&limit=100&unread_only=false
 Authorization: Bearer <token>
 ```
 
@@ -181,16 +181,15 @@ Authorization: Bearer <token>
 Content-Type: application/json
 
 {
-  "user_id": 1,
   "plan": "pro",
   "stripe_subscription_id": "sub_xxxxx",
   "stripe_customer_id": "cus_xxxxx"
 }
 ```
 
-#### Get User Subscriptions
+#### Get My Subscriptions
 ```http
-GET /subscriptions/user/{user_id}
+GET /subscriptions/
 Authorization: Bearer <token>
 ```
 

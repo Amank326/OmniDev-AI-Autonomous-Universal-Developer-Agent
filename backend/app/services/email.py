@@ -2,7 +2,6 @@
 
 import logging
 from typing import Optional
-from emails.template import JinjaTemplate
 from emails.message import Message
 
 from app.core.config import settings

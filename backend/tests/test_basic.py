@@ -1,24 +1,23 @@
 """Basic tests for OmniDev AI Platform."""
 
 import pytest
-from fastapi.testclient import TestClient
-from app.main import app
-
-client = TestClient(app)
+from httpx import AsyncClient
 
 
-def test_health_check():
+@pytest.mark.asyncio
+async def test_health_check(async_client: AsyncClient):
     """Test health endpoint."""
-    response = client.get("/health")
+    response = await async_client.get("/health")
     assert response.status_code == 200
     data = response.json()
     assert data["status"] == "healthy"
     assert data["service"] == "omnidev-ai"
 
 
-def test_root_endpoint():
+@pytest.mark.asyncio
+async def test_root_endpoint(async_client: AsyncClient):
     """Test root endpoint."""
-    response = client.get("/")
+    response = await async_client.get("/")
     assert response.status_code == 200
     data = response.json()
     assert "message" in data
@@ -26,37 +25,48 @@ def test_root_endpoint():
     assert "status" in data
 
 
-def test_register_user():
-    """Test user registration."""
-    user_data = {
-        "email": "test@example.com",
-        "username": "testuser",
-        "password": "testpassword123",
-        "full_name": "Test User"
-    }
-    response = client.post("/api/v1/auth/register", json=user_data)
-    # May return 400 if user already exists, which is fine for this test
-    assert response.status_code in [201, 400]
+@pytest.mark.asyncio
+async def test_register_user(async_client: AsyncClient, test_user_data):
+    """Test user registration endpoint exists and rejects bad input."""
+    # Empty body should return 422 (validation error)
+    response = await async_client.post("/api/v1/auth/register", json={})
+    assert response.status_code == 422
 
 
-def test_list_agents():
-    """Test listing agents (should work without authentication for this basic test)."""
-    response = client.get("/api/v1/agents")
-    # May return 401 if authentication is required
-    assert response.status_code in [200, 401]
+@pytest.mark.asyncio
+async def test_agents_requires_auth(async_client: AsyncClient):
+    """Test that agents endpoint requires authentication."""
+    response = await async_client.get("/api/v1/agents/")
+    assert response.status_code == 401
 
 
-def test_openapi_docs():
+@pytest.mark.asyncio
+async def test_openapi_docs(async_client: AsyncClient):
     """Test that API documentation is accessible."""
-    response = client.get("/api/v1/docs")
+    response = await async_client.get("/api/v1/docs")
     assert response.status_code == 200
 
 
-def test_openapi_json():
+@pytest.mark.asyncio
+async def test_openapi_json(async_client: AsyncClient):
     """Test that OpenAPI JSON is accessible."""
-    response = client.get("/api/v1/openapi.json")
+    response = await async_client.get("/api/v1/openapi.json")
     assert response.status_code == 200
     data = response.json()
     assert "openapi" in data
     assert "info" in data
     assert "paths" in data
+
+
+@pytest.mark.asyncio
+async def test_notifications_requires_auth(async_client: AsyncClient):
+    """Test that notifications endpoint requires authentication."""
+    response = await async_client.get("/api/v1/notifications/")
+    assert response.status_code == 401
+
+
+@pytest.mark.asyncio
+async def test_subscriptions_requires_auth(async_client: AsyncClient):
+    """Test that subscriptions endpoint requires authentication."""
+    response = await async_client.get("/api/v1/subscriptions/")
+    assert response.status_code == 401

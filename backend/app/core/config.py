@@ -1,7 +1,8 @@
 """Application configuration."""
 
 import secrets
-from typing import List, Optional
+from typing import List, Optional, Union
+from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -29,6 +30,9 @@ class Settings(BaseSettings):
     )
     API_V1_STR: str = "/api/v1"
 
+    # Environment (must be declared before __init__ uses it)
+    ENVIRONMENT: str = "development"
+
     # Server Configuration
     HOST: str = "0.0.0.0"
     PORT: int = 8000
@@ -39,10 +43,39 @@ class Settings(BaseSettings):
         "http://127.0.0.1:8000",
     ]
 
+    def get_cors_origins(self) -> List[str]:
+        """Get CORS origins — uses CORS_ORIGINS env if set, else BACKEND_CORS_ORIGINS."""
+        if self.CORS_ORIGINS:
+            return [o.strip() for o in self.CORS_ORIGINS.split(",") if o.strip()]
+        return self.BACKEND_CORS_ORIGINS
+
+    @field_validator("BACKEND_CORS_ORIGINS", mode="before")
+    @classmethod
+    def assemble_cors_origins(cls, v: Union[str, List[str]]) -> List[str]:
+        """Parse CORS origins from comma-separated string or list."""
+        if isinstance(v, str) and not v.startswith("["):
+            return [i.strip() for i in v.split(",") if i.strip()]
+        if isinstance(v, list):
+            return v
+        raise ValueError(v)
+
+    # CORS override (comma-separated) — set in production
+    CORS_ORIGINS: Optional[str] = None
+
     # Database
-    DATABASE_URL: str = "postgresql+asyncpg://omnidev:omnidev@localhost:5432/omnidev"
+    DATABASE_URL: str = "postgresql+asyncpg://omnidev:omnidev_password@localhost:5432/omnidev"
     DATABASE_POOL_SIZE: int = 10
     DATABASE_MAX_OVERFLOW: int = 20
+
+    @field_validator("DATABASE_URL", mode="before")
+    @classmethod
+    def fix_database_url(cls, v: str) -> str:
+        """Convert postgres:// to postgresql+asyncpg:// for Render/Railway."""
+        if v and v.startswith("postgres://"):
+            v = v.replace("postgres://", "postgresql+asyncpg://", 1)
+        elif v and v.startswith("postgresql://"):
+            v = v.replace("postgresql://", "postgresql+asyncpg://", 1)
+        return v
 
     # Redis
     REDIS_URL: str = "redis://localhost:6379/0"
@@ -58,7 +91,12 @@ class Settings(BaseSettings):
     def __init__(self, **kwargs):
         """Initialize settings and validate SECRET_KEY."""
         super().__init__(**kwargs)
-        if not self.SECRET_KEY or self.SECRET_KEY == "your-secret-key-change-in-production":
+        insecure_defaults = {
+            "",
+            "your-secret-key-change-in-production",
+            "your-super-secret-key-change-in-production-min-32-chars",
+        }
+        if self.SECRET_KEY in insecure_defaults:
             if self.ENVIRONMENT == "production":
                 raise ValueError(
                     "SECRET_KEY must be set in production environment. "
@@ -90,7 +128,10 @@ class Settings(BaseSettings):
 
     # Monitoring
     SENTRY_DSN: Optional[str] = None
-    ENVIRONMENT: str = "development"
+
+    # Rate Limiting
+    RATE_LIMIT_AUTHENTICATED: int = 100  # requests per minute
+    RATE_LIMIT_UNAUTHENTICATED: int = 20  # requests per minute
 
     # WebSocket
     WEBSOCKET_URL: str = "ws://localhost:8000"

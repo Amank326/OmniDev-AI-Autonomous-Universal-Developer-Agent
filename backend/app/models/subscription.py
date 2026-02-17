@@ -1,11 +1,15 @@
 """Subscription and payment models."""
 
-from datetime import datetime
+from datetime import datetime, timezone
 from sqlalchemy import Column, Integer, String, Numeric, DateTime, Enum as SQLEnum, ForeignKey, Boolean
 from sqlalchemy.orm import relationship
 import enum
 
 from app.core.database import Base
+
+
+def _utcnow():
+    return datetime.now(timezone.utc)
 
 
 class SubscriptionPlan(str, enum.Enum):
@@ -37,11 +41,11 @@ class Subscription(Base):
     stripe_customer_id = Column(String, nullable=True)
     plan = Column(SQLEnum(SubscriptionPlan), default=SubscriptionPlan.FREE)
     status = Column(SQLEnum(SubscriptionStatus), default=SubscriptionStatus.ACTIVE)
-    current_period_start = Column(DateTime, nullable=True)
-    current_period_end = Column(DateTime, nullable=True)
+    current_period_start = Column(DateTime(timezone=True), nullable=True)
+    current_period_end = Column(DateTime(timezone=True), nullable=True)
     cancel_at_period_end = Column(Boolean, default=False)
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = Column(DateTime(timezone=True), default=_utcnow)
+    updated_at = Column(DateTime(timezone=True), default=_utcnow, onupdate=_utcnow)
 
     # Relationships
     user = relationship("User", back_populates="subscriptions")
@@ -59,4 +63,4 @@ class Payment(Base):
     currency = Column(String, default="usd")
     status = Column(String, nullable=False)
     description = Column(String, nullable=True)
-    created_at = Column(DateTime, default=datetime.utcnow)
+created_at = Column(DateTime(timezone=True), default=_utcnow)

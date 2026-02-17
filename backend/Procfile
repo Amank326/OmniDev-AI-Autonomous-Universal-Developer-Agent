@@ -1,0 +1,4 @@
+# Procfile for Railway / Render / Heroku
+web: uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000} --workers 4
+worker: celery -A app.utils.celery_app:celery_app worker --loglevel=info -Q agent-queue,notification-queue --concurrency=4
+beat: celery -A app.utils.celery_app:celery_app beat --loglevel=info

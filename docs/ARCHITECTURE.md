@@ -34,7 +34,7 @@ OmniDev AI is built with a microservices-inspired architecture that separates co
 ### Frontend (Next.js + TypeScript)
 
 - **Purpose**: User interface and client-side logic
-- **Technology**: Next.js 14, React 18, TypeScript
+- **Technology**: Next.js 15, React 19, TypeScript
 - **Features**:
   - Server-Side Rendering (SSR)
   - Static Site Generation (SSG)

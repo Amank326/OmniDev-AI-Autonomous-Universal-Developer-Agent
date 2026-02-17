@@ -3,7 +3,7 @@
 import logging
 from abc import ABC, abstractmethod
 from typing import Dict, Any, Optional
-from datetime import datetime
+from datetime import datetime, timezone
 
 logger = logging.getLogger(__name__)
 
@@ -31,7 +31,7 @@ class BaseAgent(ABC):
         return {
             "agent": self.name,
             "result": result,
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
         }
 
     async def run(self, input_data: Dict[str, Any]) -> Dict[str, Any]:
@@ -57,5 +57,5 @@ class BaseAgent(ABC):
             return {
                 "agent": self.name,
                 "error": str(e),
-                "timestamp": datetime.utcnow().isoformat(),
+                "timestamp": datetime.now(timezone.utc).isoformat(),
             }

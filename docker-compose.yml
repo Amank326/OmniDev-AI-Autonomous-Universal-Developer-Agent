@@ -72,6 +72,48 @@ services:
       - backend
     command: npm run dev
 
+  # Celery Worker
+  celery-worker:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: omnidev-celery-worker
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://omnidev:omnidev_password@postgres:5432/omnidev
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/1
+      - CELERY_RESULT_BACKEND=redis://redis:6379/2
+    volumes:
+      - ./backend:/app
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    command: celery -A app.utils.celery_app:celery_app worker --loglevel=info -Q agent-queue,notification-queue
+    restart: unless-stopped
+
+  # Celery Beat (Scheduler)
+  celery-beat:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: omnidev-celery-beat
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://omnidev:omnidev_password@postgres:5432/omnidev
+      - REDIS_URL=redis://redis:6379/0
+      - CELERY_BROKER_URL=redis://redis:6379/1
+      - CELERY_RESULT_BACKEND=redis://redis:6379/2
+    volumes:
+      - ./backend:/app
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    command: celery -A app.utils.celery_app:celery_app beat --loglevel=info
+    restart: unless-stopped
+
 volumes:
   postgres_data:
   redis_data:

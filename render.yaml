@@ -1,0 +1,113 @@
+# ============================================================
+# OmniDev AI — Render Blueprint (render.yaml)
+# ============================================================
+# Deploy: Connect repo to Render, it auto-detects this file
+# Docs: https://render.com/docs/blueprint-spec
+# ============================================================
+
+services:
+  # ── Backend API ─────────────────────────────────────────────
+  - type: web
+    name: omnidev-backend
+    runtime: python
+    region: oregon
+    plan: starter
+    buildCommand: pip install -r backend/requirements.txt
+    startCommand: cd backend && uvicorn app.main:app --host 0.0.0.0 --port $PORT --workers 4
+    healthCheckPath: /health
+    envVars:
+      - key: ENVIRONMENT
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: omnidev-db
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          name: omnidev-redis
+          type: redis
+          property: connectionString
+      - key: CELERY_BROKER_URL
+        fromService:
+          name: omnidev-redis
+          type: redis
+          property: connectionString
+      - key: SECRET_KEY
+        generateValue: true
+      - key: CORS_ORIGINS
+        value: https://omnidev-frontend.onrender.com
+      - key: STRIPE_SECRET_KEY
+        sync: false
+      - key: STRIPE_WEBHOOK_SECRET
+        sync: false
+      - key: PYTHONPATH
+        value: /opt/render/project/src/backend
+
+  # ── Frontend ────────────────────────────────────────────────
+  - type: web
+    name: omnidev-frontend
+    runtime: node
+    region: oregon
+    plan: starter
+    buildCommand: cd frontend && npm install && npm run build
+    startCommand: cd frontend && npm run start
+    healthCheckPath: /
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: NEXT_PUBLIC_API_URL
+        value: https://omnidev-backend.onrender.com
+      - key: NEXT_PUBLIC_WS_URL
+        value: wss://omnidev-backend.onrender.com/ws
+      - key: NEXT_PUBLIC_APP_NAME
+        value: OmniDev AI
+
+  # ── Celery Worker ───────────────────────────────────────────
+  - type: worker
+    name: omnidev-worker
+    runtime: python
+    region: oregon
+    plan: starter
+    buildCommand: pip install -r backend/requirements.txt
+    startCommand: cd backend && celery -A app.utils.celery_app:celery_app worker --loglevel=info -Q agent-queue,notification-queue --concurrency=4
+    envVars:
+      - key: ENVIRONMENT
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: omnidev-db
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          name: omnidev-redis
+          type: redis
+          property: connectionString
+      - key: CELERY_BROKER_URL
+        fromService:
+          name: omnidev-redis
+          type: redis
+          property: connectionString
+      - key: SECRET_KEY
+        fromService:
+          name: omnidev-backend
+          type: web
+          envVarKey: SECRET_KEY
+      - key: PYTHONPATH
+        value: /opt/render/project/src/backend
+
+  # ── Redis ───────────────────────────────────────────────────
+  - type: redis
+    name: omnidev-redis
+    region: oregon
+    plan: starter
+    maxmemoryPolicy: allkeys-lru
+    ipAllowList: []  # Only internal
+
+# ── Database ──────────────────────────────────────────────────
+databases:
+  - name: omnidev-db
+    region: oregon
+    plan: starter
+    databaseName: omnidev
+    user: omnidev
+    postgresMajorVersion: "15"

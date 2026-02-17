@@ -24,7 +24,7 @@ Production-ready, full-stack AI platform featuring autonomous AI agents, real-ti
 - **Alembic** - Database migrations
 
 ### Frontend
-- **Next.js 14** - React framework
+- **Next.js 15** - React framework
 - **TypeScript** - Type-safe JavaScript
 - **Tailwind CSS** - Utility-first CSS framework
 - **React Query** - Data fetching and caching
