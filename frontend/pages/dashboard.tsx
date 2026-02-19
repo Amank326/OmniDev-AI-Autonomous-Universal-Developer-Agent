@@ -146,7 +146,6 @@ export default function Dashboard() {
     <Layout>
       <Head>
         <title>Dashboard — OmniDev AI</title>
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
       </Head>
 
       <div className="max-w-7xl mx-auto px-4 pt-24 pb-12">

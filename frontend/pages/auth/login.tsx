@@ -40,7 +40,6 @@ export default function Login() {
     <>
       <Head>
         <title>Login — OmniDev AI</title>
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
       </Head>
 
       <div className="min-h-screen flex items-center justify-center relative overflow-hidden bg-dark-950">

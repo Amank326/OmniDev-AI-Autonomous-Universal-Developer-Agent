@@ -2,7 +2,7 @@
 
 from datetime import datetime
 from typing import Optional, Dict, Any, List
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 from app.models.agent import AgentStatus, AgentType
 
@@ -41,8 +41,7 @@ class AgentResponse(AgentBase):
     updated_at: datetime
     last_run: Optional[datetime] = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class AgentTaskCreate(BaseModel):
@@ -67,5 +66,4 @@ class AgentTaskResponse(BaseModel):
     completed_at: Optional[datetime] = None
     created_at: datetime
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
