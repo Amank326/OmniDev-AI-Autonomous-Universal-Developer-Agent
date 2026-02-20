@@ -136,12 +136,12 @@ function Rings() {
 
 export default function HeroOrb() {
   return (
-    <div className="w-full h-full" style={{ minHeight: '500px' }}>
+    <div className="w-full h-full relative" style={{ minHeight: '500px' }}>
       <Canvas
         camera={{ position: [0, 0, 6], fov: 50 }}
         dpr={[1, 2]}
         gl={{ antialias: true, alpha: true }}
-        style={{ background: 'transparent' }}
+        style={{ background: 'transparent', position: 'absolute', inset: 0, width: '100%', height: '100%' }}
       >
         <ambientLight intensity={0.3} />
         <pointLight position={[5, 5, 5]} intensity={0.8} color="#7c3aed" />

@@ -58,9 +58,20 @@ body {
 }
 
 /* Ensure images and media scale properly */
-img, video, canvas, svg {
+img, video {
   max-width: 100%;
   height: auto;
+  display: block;
+}
+
+/* SVGs: only constrain standalone ones, not inline icons */
+svg:not([class]) {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Do NOT apply height:auto to <canvas> — it breaks WebGL/Three.js rendering */
+canvas {
   display: block;
 }
 
@@ -298,6 +309,15 @@ img, video, canvas, svg {
   .btn-primary, .btn-outline { padding: 10px 20px; font-size: 0.85rem; }
   .pricing-card { padding: 24px; }
   .agent-card { padding: 20px; }
+}
+
+/* Larger screens — increase visual weight */
+@media (min-width: 1280px) {
+  .btn-primary, .btn-outline { padding: 16px 40px; }
+}
+
+@media (min-width: 1536px) {
+  .btn-primary, .btn-outline { padding: 18px 44px; }
 }
 
 /* Safe area insets for notched devices */

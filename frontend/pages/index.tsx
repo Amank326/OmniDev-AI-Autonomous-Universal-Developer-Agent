@@ -4,6 +4,7 @@ import dynamic from 'next/dynamic'
 import { motion } from 'framer-motion'
 import { ScrollReveal, StaggerContainer, StaggerItem, CountUp } from '@/components/ScrollAnimations'
 import ParticleField from '@/components/ParticleField'
+import Navbar from '@/components/Navbar'
 
 const HeroOrb = dynamic(() => import('@/components/HeroOrb'), { ssr: false })
 
@@ -164,6 +165,7 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
+      <Navbar />
       <ParticleField count={50} />
 
       {/* ========================== HERO SECTION ========================== */}
@@ -174,7 +176,7 @@ export default function Home() {
         <div className="orb orb-cyan w-[400px] h-[400px] top-1/3 -right-32 animate-pulse-glow" style={{ animationDelay: '1.5s' }} />
         <div className="orb orb-pink w-[300px] h-[300px] bottom-20 left-1/4 animate-pulse-glow" style={{ animationDelay: '3s' }} />
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid lg:grid-cols-2 gap-12 items-center relative z-10 pt-24">
+        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 grid lg:grid-cols-2 gap-12 xl:gap-16 items-center relative z-10 pt-28 lg:pt-32">
           {/* Left — Text */}
           <div>
             <motion.div
@@ -192,7 +194,7 @@ export default function Home() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.15 }}
-              className="text-5xl sm:text-6xl lg:text-7xl font-extrabold leading-tight mb-6"
+              className="text-5xl sm:text-6xl lg:text-7xl xl:text-[5.5rem] 2xl:text-[6.5rem] font-extrabold leading-[1.08] mb-6"
             >
               Build Faster
               <br />
@@ -206,7 +208,7 @@ export default function Home() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.3 }}
-              className="text-lg text-slate-400 max-w-lg mb-8 leading-relaxed"
+              className="text-lg xl:text-xl text-slate-400 max-w-xl mb-10 leading-relaxed"
             >
               Next-generation autonomous developer platform. 6 specialized AI agents that generate, review, debug, document, refactor, and deploy your code — all in real-time.
             </motion.p>
@@ -217,13 +219,13 @@ export default function Home() {
               transition={{ duration: 0.8, delay: 0.45 }}
               className="flex flex-wrap gap-4"
             >
-              <Link href="/auth/register" className="btn-primary text-base">
+              <Link href="/auth/register" className="btn-primary text-base xl:text-lg">
                 Get Started Free
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                 </svg>
               </Link>
-              <a href="#features" className="btn-outline text-base">
+              <a href="#features" className="btn-outline text-base xl:text-lg">
                 Explore Features
               </a>
             </motion.div>
@@ -251,7 +253,7 @@ export default function Home() {
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 1.2, delay: 0.3 }}
-            className="hidden lg:block h-[550px] relative"
+            className="hidden lg:block h-[550px] xl:h-[620px] 2xl:h-[680px] relative"
           >
             <HeroOrb />
             {/* Floating badges around orb */}
@@ -301,7 +303,7 @@ export default function Home() {
             <ScrollReveal key={i} delay={i * 0.1}>
               <div className="text-center">
                 <div className="text-3xl mb-2">{stat.icon}</div>
-                <div className="text-3xl sm:text-4xl font-bold text-white mb-1">
+                <div className="text-3xl sm:text-4xl xl:text-5xl font-bold text-white mb-1">
                   <CountUp end={stat.value} suffix={stat.suffix} />
                 </div>
                 <div className="text-sm text-slate-500">{stat.label}</div>
