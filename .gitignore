@@ -229,3 +229,6 @@ backend/logs/
 # Temp files
 e2e_test*.log
 fix_enum.py
+test-output.txt
+test-results.txt
+tsconfig.tsbuildinfo

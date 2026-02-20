@@ -7,9 +7,9 @@ interface LayoutProps {
 
 export default function Layout({ children }: LayoutProps) {
   return (
-    <div className="min-h-screen flex flex-col bg-dark-950 noise-overlay">
+    <div className="min-h-screen flex flex-col bg-dark-950 noise-overlay overflow-x-hidden">
       <Navbar />
-      <main className="flex-1 relative z-10">{children}</main>
+      <main className="flex-1 relative z-10 w-full">{children}</main>
     </div>
   )
 }

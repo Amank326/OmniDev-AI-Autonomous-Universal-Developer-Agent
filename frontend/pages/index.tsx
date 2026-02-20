@@ -161,7 +161,6 @@ export default function Home() {
       <Head>
         <title>OmniDev AI — Autonomous Universal Developer Agent</title>
         <meta name="description" content="Next-generation AI development platform with autonomous agents for code generation, review, debugging, and deployment." />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
 

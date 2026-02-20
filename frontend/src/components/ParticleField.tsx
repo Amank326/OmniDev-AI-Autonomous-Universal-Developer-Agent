@@ -49,6 +49,14 @@ export default function ParticleField({ count = 60 }: { count?: number }) {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
+    // Handle high-DPI / Retina displays
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width = dimensions.w * dpr;
+    canvas.height = dimensions.h * dpr;
+    canvas.style.width = `${dimensions.w}px`;
+    canvas.style.height = `${dimensions.h}px`;
+    ctx.scale(dpr, dpr);
+
     const handleMouse = (e: MouseEvent) => {
       mouseRef.current = { x: e.clientX, y: e.clientY };
     };
@@ -113,10 +121,8 @@ export default function ParticleField({ count = 60 }: { count?: number }) {
   return (
     <canvas
       ref={canvasRef}
-      width={dimensions.w}
-      height={dimensions.h}
       className="fixed inset-0 pointer-events-none z-0"
-      style={{ opacity: 0.6 }}
+      style={{ width: dimensions.w, height: dimensions.h, opacity: 0.6 }}
     />
   );
 }
